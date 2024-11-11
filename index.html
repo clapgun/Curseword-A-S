@@ -23,7 +23,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-        #result {
+        #result, #wordOfTheDay {
             margin-top: 20px;
             font-size: 1.2em;
             color: #333;
@@ -79,7 +79,7 @@
         }
     </style>
     <script>
-        const list1 = ["Dumb", "Scum", "Douche", "Shit", "Dick", "Fuck", "Dip", "Ass", "Dog", "Lib", "Butt", "Cock", "Dirt", "Bum", "Trump", "Twat", "Cum", "Piss", "Wank", "Poop" , "Jizz", "Prick", "Minge", "Spaff", "Fudge", "Toss", "Smeg", "Chuff", "Flange", "Fanny", "Dildo"];
+        const list1 = ["Dumb", "Scum", "Douche", "Shit", "Dick", "Fuck", "Dip", "Ass", "Dog", "Lib", "Butt", "Cock", "Dirt", "Bum", "Trump", "Twat", "Cum", "Piss", "Wank", "Poop", "Jizz", "Prick", "Minge", "Spaff", "Fudge", "Toss", "Smeg", "Chuff", "Flange", "Fanny", "Dildo"];
         const list2 = ["Ass", "Bag", "Shit", "Head", "Hat", "Tard", "Fuck", "Lord", "Wit", "Face", "Wad", "Sucker", "Boy", "Stain", "Stick", "Nozzle", "Clown", "Waffle", "Nugget", "Goblin", "Monger", "Womble", "Monkey", "Badger", "Skunk", "Splatter", "Wazzock", "Flaps", "Shaft", "Knuckle", "Slut", "Wanker"];
 
         let isSpeechEnabled = false;
@@ -124,11 +124,36 @@
                 speak(errorText);
             }
         }
+
+        function generateWordOfTheDay() {
+            const today = new Date().toISOString().slice(0, 10);
+            const savedData = JSON.parse(localStorage.getItem('wordOfTheDay')) || {};
+
+            if (savedData.date !== today) {
+                const index1 = getRandomInt(list1.length);
+                const index2 = getRandomInt(list2.length);
+                const word1 = list1[index1];
+                const word2 = list2[index2];
+                const wordOfTheDay = `${word1}${word2} (${index1 + 1}-${index2 + 1})`;
+                
+                savedData.word = wordOfTheDay;
+                savedData.date = today;
+                localStorage.setItem('wordOfTheDay', JSON.stringify(savedData));
+            }
+            
+            document.getElementById("wordOfTheDay").innerText = `Word of the Day: ${savedData.word}`;
+            speak(savedData.word);
+        }
+
+        window.onload = generateWordOfTheDay;
     </script>
 </head>
 <body>
     <h1>Compound Curse Word Generator</h1>
     <h1>Anglo-Saxon Update</h1>
+
+    <div id="wordOfTheDay"></div>
+
     <button onclick="generateRandomCompound()">Generate Random Compound Word</button>
     <br>
     <input type="number" id="index1" placeholder="Number from 1-31 for Prefix" min="1" max="31">
